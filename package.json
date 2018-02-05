@@ -1,0 +1,20 @@
+{
+  "name": "effortless-mailer",
+  "version": "0.5.0a",
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antonyarchukcodemotion/effortless-mailer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/antonyarchukcodemotion/effortless-mailer/issues"
+  },
+  "homepage": "https://github.com/antonyarchukcodemotion/effortless-mailer#readme",
+  "dependencies": {
+    "aws-sdk": "^2.188.0",
+    "mailgun-js": "^0.14.2"
+  }
+}
