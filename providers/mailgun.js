@@ -6,8 +6,8 @@ function initProvider(options) {
   return {
     sendEmail: (destination, subject, body) => {
       const mailTo = Array.isArray(destination)
-          ? destination.join(',')
-          : destination;
+        ? destination.join(',')
+        : destination;
 
       const mailData = Object.assign({}, {
         from: options.from,

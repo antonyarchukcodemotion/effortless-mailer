@@ -1,21 +1,30 @@
 const aws = require('aws-sdk');
+const { spliceToChunks } = require('../utils');
 
 const API_VERSION = '2010-12-01';
+const MAX_EMAILS_PER_REQUEST = 50;
 
 function initProvider(options) {
   aws.config.update(options);
-  const ses = new aws.SES({apiVersion: API_VERSION});
+  const ses = new aws.SES({ apiVersion: API_VERSION });
 
   return {
     sendEmail: (destination, subject, body) => {
-      // TODO: Implement splitting to 50 emails
+      // Wrap destination in array if it is a string
       const recipients = Array.isArray(destination)
-          ? destination
-          : [destination];
+        ? destination
+        : [destination];
 
-      const mailData = {
+      // Split recipients to chunks. It is a limitation of the Amazon SES
+      const recipientsChunks = spliceToChunks(recipients, MAX_EMAILS_PER_REQUEST);
+
+      const sendEmail = data => ses.sendEmail(data).promise();
+      const mailData = recipients => ({
         Source: options.from,
-        Destination: {ToAddresses: recipients},
+        Destination: {
+          //ToAddresses: recipients,
+          BccAddresses: recipients,
+        },
         Message: {
           Body: {
             Html: {
@@ -32,9 +41,13 @@ function initProvider(options) {
             Data: subject,
           },
         },
-      };
+      });
 
-      return ses.sendEmail(mailData).promise();
+      return Promise.all(
+        recipientsChunks.map(recipientsChunk =>
+          sendEmail(mailData(recipientsChunk)),
+        ),
+      );
     },
   };
 }
