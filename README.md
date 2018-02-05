@@ -12,7 +12,7 @@ $ npm i effortless-mailer
 ```javascript 1.6
 // Config for Amazon SES:
 const options = {
-  from: 'abc@company.com',
+  from: 'Company <info@company.com>',
   accessKeyId: "ABC123",
   secretAccessKey: "XYZ789",
   region: "us-east-1",
