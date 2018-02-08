@@ -49,6 +49,9 @@ function initProvider(options) {
         ),
       );
     },
+    isVerifiedEmail: email => ses.listIdentities({ IdentityType: 'EmailAddress' }).promise()
+      .then(data => data.Identities.includes(email)),
+    verifyEmail: email => ses.verifyEmailIdentity({ EmailAddress: email }).promise(),
   };
 }
 
