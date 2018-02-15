@@ -15,15 +15,11 @@ function initProvider(options) {
         ? destination
         : [destination];
 
-      // Split recipients to chunks. It is a limitation of the Amazon SES
-      const recipientsChunks = spliceToChunks(recipients, MAX_EMAILS_PER_REQUEST);
-
       const sendEmail = data => ses.sendEmail(data).promise();
-      const mailData = recipients => ({
+      const mailData = (recipients, useBlindCopies = false) => ({
         Source: options.from,
         Destination: {
-          //ToAddresses: recipients,
-          BccAddresses: recipients,
+          [useBlindCopies ? 'BccAddresses' : 'ToAddresses']: recipients,
         },
         Message: {
           Body: {
@@ -43,11 +39,20 @@ function initProvider(options) {
         },
       });
 
-      return Promise.all(
-        recipientsChunks.map(recipientsChunk =>
-          sendEmail(mailData(recipientsChunk)),
-        ),
-      );
+      if (recipients.length === 1) {
+        // Send individual email
+        return sendEmail(mailData(recipients));
+      } else {
+        // Split recipients to chunks. It is a limitation of the Amazon SES
+        const recipientsChunks = spliceToChunks(recipients, MAX_EMAILS_PER_REQUEST);
+
+        // Send all chunks as blind copies
+        return Promise.all(
+          recipientsChunks.map(recipientsChunk =>
+            sendEmail(mailData(recipientsChunk, true)),
+          ),
+        );
+      }
     },
     isVerifiedEmail: email => ses.listIdentities({ IdentityType: 'EmailAddress' }).promise()
       .then(data => data.Identities.includes(email)),

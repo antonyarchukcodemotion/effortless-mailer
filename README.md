@@ -1,13 +1,17 @@
 # effortless-mailer
-Currently, default mail provider is Amazon SES.
+Please note, that current default email provider is Amazon SES.
 
-## Installation
+### Installation
 
 ```console
 $ npm i effortless-mailer
 ```
 
-### Using
+### Features
+- Email field could contain a string with a single email address or an array of addresses.
+- An individual email will be sent as usual, with a recipient in "To:" field. If there are more then one recipient if will use "Bcc:" field instead.
+- Amazon SES has limitation of 50 recipients per API request. If you will try to send an email to a higher amount of users, this module will split it into multiple bunches of up to a 50 users and will wrap it in a single Promise.
+### Usage
 
 ```javascript 1.6
 // Config for Amazon SES:
@@ -20,6 +24,5 @@ const options = {
  
 const mailer = require('effortless-mailer')(options);
  
-// 'email' could be a string with email address or an array of addresses
 mailer.sendEmail(email, subject, htmlBody)
 ```
